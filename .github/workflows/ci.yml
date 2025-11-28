@@ -24,6 +24,20 @@ jobs:
           pip install -r requirements.txt
           pip install ruff mypy
 
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache ruff/mypy
+        uses: actions/cache@v4
+        with:
+          path: |
+            .ruff_cache
+            .mypy_cache
+          key: ${{ runner.os }}-lm-${{ hashFiles('requirements.txt') }}
+
       - name: Ruff
         run: |
           ruff check atenea bot.py
@@ -47,6 +61,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
       - name: Import smoke test
         run: |
