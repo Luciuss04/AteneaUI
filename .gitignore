@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+logs/
+*.log
+.env
+.trae/
+.vscode/
+libopus-0.dll
+*.zip
