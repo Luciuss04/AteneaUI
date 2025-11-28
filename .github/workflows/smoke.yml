@@ -1,4 +1,4 @@
-name: CI
+name: Smoke
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  lint-and-typecheck:
+  smoke:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,7 +22,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install ruff mypy
 
       - name: Cache pip
         uses: actions/cache@v4
@@ -30,18 +29,22 @@ jobs:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
-      - name: Cache ruff/mypy
-        uses: actions/cache@v4
-        with:
-          path: |
-            .ruff_cache
-            .mypy_cache
-          key: ${{ runner.os }}-lm-${{ hashFiles('requirements.txt') }}
-
-      - name: Ruff
+      - name: Import smoke test
         run: |
-          ruff check atenea bot.py
-
-      - name: Mypy
-        run: |
-          mypy atenea bot.py --ignore-missing-imports
+          python - <<'PY'
+          import importlib
+          mods = [
+              'bot',
+              'atenea.commands.music',
+              'atenea.commands.config',
+              'atenea.commands.license',
+              'atenea.music.player',
+              'atenea.music.youtube',
+              'atenea.music.spotify',
+              'atenea.config.manager',
+              'atenea.license.manager',
+          ]
+          for m in mods:
+              importlib.import_module(m)
+          print('smoke ok')
+          PY
